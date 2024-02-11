@@ -1,4 +1,5 @@
 import { InputType, Field } from '@nestjs/graphql';
+import { BillingInput } from './billing.input';
 
 @InputType({ description: 'User Input' })
 export class UserInput {

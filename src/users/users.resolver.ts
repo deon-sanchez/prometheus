@@ -9,15 +9,12 @@ import {
 import { UsersService } from './users.service';
 import { UserModel } from 'src/models/users.model';
 import { UserInput } from 'src/dtos/user.input';
-import { BillingService } from 'src/billing/billing.service';
-import { BillingModel } from 'src/models/billing.model';
+import { Schema as MongooseSchema } from 'mongoose';
+import { BillingDocument, BillingModel } from 'src/models/billing.model';
 
 @Resolver((of) => UserModel)
 export class UsersResolver {
-  constructor(
-    private readonly userService: UsersService,
-    private readonly billingService: BillingService,
-  ) {}
+  constructor(private readonly userService: UsersService) {}
 
   @Query((returns) => [UserModel])
   users(): Promise<UserModel[]> {
@@ -25,7 +22,9 @@ export class UsersResolver {
   }
 
   @Query((returns) => UserModel)
-  async user(@Args('id') _id: string): Promise<UserModel> {
+  async user(
+    @Args('_id', { type: () => String }) _id: MongooseSchema.Types.ObjectId,
+  ): Promise<UserModel> {
     return this.userService.getUserById(_id);
   }
 
@@ -35,12 +34,16 @@ export class UsersResolver {
   }
 
   @Mutation((returns) => UserModel)
-  async deleteUser(@Args('id') _id: string): Promise<UserModel> {
+  async deleteUser(
+    @Args('_id', { type: () => String }) _id: MongooseSchema.Types.ObjectId,
+  ): Promise<UserModel> {
     return this.userService.deleteUserById(_id);
   }
 
-  @ResolveField(() => UserModel)
-  async billing(@Parent() billing: BillingModel) {
-    return this.billingService.findById(billing._id);
+  @ResolveField()
+  async billing(@Parent() billing: BillingDocument) {
+    await billing.populate({ path: 'billing', model: BillingModel.name });
+
+    return { ...billing };
   }
 }

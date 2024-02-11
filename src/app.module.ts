@@ -19,11 +19,10 @@ import { MongooseModule } from '@nestjs/mongoose';
       driver: ApolloDriver,
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        autoSchemaFile: 'schema.gql',
-        context: ({ req, res }) => ({ req, res }),
+        autoSchemaFile: 'src/schema.gql',
         sortSchema: true,
+        playground: true,
         debug: configService.get<boolean>('DEBUG'),
-        uploads: false,
       }),
     }),
     // Mongo module

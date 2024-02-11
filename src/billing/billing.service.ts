@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Schema as MongooseSchema } from 'mongoose';
 import { BillingDocument, BillingModel } from 'src/models/billing.model';
 import Stripe from 'stripe';
 
@@ -19,59 +19,33 @@ export class BillingService {
     });
   }
 
-  async createCustomer(email: string): Promise<BillingModel> {
-    const stripeCustomer = await this.stripe.customers.create({ email });
+  async createCustomer(
+    _id: MongooseSchema.Types.ObjectId,
+  ): Promise<BillingModel> {
+    // const stripeCustomer = await this.stripe.customers.create({ email });
+    const stripeId = { _id, stripe_id: 'cus-test-123' };
+    const createdBilling = new this.stripeModel(stripeId);
 
-    if (!stripeCustomer) {
-      throw new Error('Failed to create stripe customer');
-    }
-
-    const stripeId = { stripe_id: stripeCustomer.id };
-
-    const stripeEntry = this.stripeModel.create(stripeId);
-
-    if (!stripeEntry) {
+    if (!createdBilling) {
       throw new Error(`Failed to add ${stripeId} to database`);
     }
 
-    const updatedUser = this.stripeModel.findOneAndUpdate(
-      { email },
-      { $addToSet: stripeId },
-      { new: true },
-    );
-
-    if (!updatedUser) {
-      throw new Error(`Failed to update user with ${stripeId}`);
-    }
-
-    return stripeEntry;
+    return createdBilling.save();
   }
 
-  async deleteCustomer(stripe_id: string): Promise<BillingModel> {
-    const customer = await this.stripe.customers.del(stripe_id);
+  async deleteCustomer(
+    _id: MongooseSchema.Types.ObjectId,
+  ): Promise<BillingModel> {
+    // const customer = await this.stripe.customers.del(_id.toString());
 
-    if (!customer) {
-      throw new Error('Failed to delete customer');
-    }
+    // if (!customer) {
+    //   throw new Error('Failed to delete customer');
+    // }
 
-    const stripeRemoval = this.stripeModel
-      .findOneAndDelete({ stripe_id })
-      .exec();
-
-    if (!stripeRemoval) {
-      throw new Error(`Failed to remove ${stripe_id} from database`);
-    }
-
-    return stripeRemoval;
+    return await this.stripeModel.findByIdAndDelete(_id).exec();
   }
 
   async findById(id: string): Promise<BillingModel> {
-    const customer = await this.stripeModel.findById(id);
-
-    if (!customer) {
-      throw new Error('Failed to find customer');
-    }
-
-    return customer;
+    return await this.stripeModel.findById(id).exec();
   }
 }

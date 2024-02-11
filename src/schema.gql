@@ -2,21 +2,21 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-"""Stripe Response"""
+"""Billing Response"""
 type BillingModel {
-  _id: ID!
+  _id: String
   stripe_id: String
 }
 
 type Mutation {
-  createCustomer(email: String!): BillingModel!
+  createCustomer(_id: String!): BillingModel!
   createUser(input: UserInput!): UserModel!
-  deleteCustomer(stripe_id: String!): BillingModel!
-  deleteUser(id: String!): UserModel!
+  deleteCustomer(_id: String!): BillingModel!
+  deleteUser(_id: String!): UserModel!
 }
 
 type Query {
-  user(id: String!): UserModel!
+  user(_id: String!): UserModel!
   users: [UserModel!]!
 }
 
@@ -28,7 +28,7 @@ input UserInput {
 
 """User Response"""
 type UserModel {
-  _id: ID!
-  billing: BillingModel
+  _id: String!
+  billing: BillingModel!
   email: String!
 }

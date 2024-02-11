@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Schema as MongooseSchema } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserInput } from 'src/dtos/user.input';
 import { UserDocument, UserModel } from 'src/models/users.model';
@@ -18,49 +18,34 @@ export class UsersService {
   ) {}
 
   async createUser(user: UserInput): Promise<UserModel> {
-    try {
-      user.password = await bcrypt.hash(user.password, SALT_ROUNDS);
-      const newUser = new this.userModel(user);
-      return newUser.save();
-    } catch (error) {
+    user.password = await bcrypt.hash(user.password, SALT_ROUNDS);
+    const newUser = new this.userModel(user);
+
+    if (!newUser) {
       throw new InternalServerErrorException('User creation failed');
     }
+
+    return newUser.save();
   }
 
   async getAllUsers(): Promise<UserModel[]> {
-    try {
-      const users = await this.userModel.find().lean();
-      return users;
-    } catch (error) {
-      throw new Error(error);
-    }
+    return await this.userModel.find().exec();
   }
 
-  async getUserById(id: string): Promise<UserModel> {
-    const user = await this.userModel.findById(id).exec();
+  async getUserById(_id: MongooseSchema.Types.ObjectId): Promise<UserModel> {
+    const user = await this.userModel.findById(_id).exec();
 
     if (!user) {
-      throw new NotFoundException(`User ${id} not found`);
+      throw new NotFoundException(`User ${_id} not found`);
     }
     return user;
   }
 
-  async deleteUserById(id: string): Promise<UserModel> {
-    const user = await this.userModel.findByIdAndDelete(id).exec();
+  async deleteUserById(_id: MongooseSchema.Types.ObjectId): Promise<UserModel> {
+    const user = await this.userModel.findByIdAndDelete(_id).exec();
 
     if (!user) {
-      throw new NotFoundException(`User ${id} not found`);
-    }
-    return user;
-  }
-
-  async updateUser(email: string, json: any): Promise<UserModel> {
-    const user = await this.userModel
-      .findOneAndUpdate({ email }, json, { new: true })
-      .exec();
-
-    if (!user) {
-      throw new InternalServerErrorException('User update failed');
+      throw new NotFoundException(`User ${_id} not found`);
     }
     return user;
   }

@@ -1,17 +1,17 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export type BillingDocument = BillingModel & Document;
 
-@ObjectType({ description: 'Stripe Response' })
+@ObjectType({ description: 'Billing Response' })
 @Schema()
 export class BillingModel extends Document {
-  @Field(() => ID)
-  _id: string;
+  @Field((type) => String, { nullable: true })
+  _id: MongooseSchema.Types.ObjectId;
 
   @Field((type) => String, { nullable: true })
-  @Prop({ nullable: true })
+  @Prop({ type: String })
   stripe_id: string;
 }
 
