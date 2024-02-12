@@ -1,25 +1,38 @@
+// External imports from NestJS and other libraries
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { APP_GUARD } from '@nestjs/core';
+
+// Module imports from within the application
 import { UsersModule } from './apps/users/users.module';
 import { BillingModule } from './apps/billing/billing.module';
 import { AuthModule } from './apps/auth/auth.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { MongooseModule } from '@nestjs/mongoose';
+
+// Guard imports
 import { JwtAuthGuard } from './apps/auth/jwt.guard';
-import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
-    // Config module
+    // Global configuration module for environment variables
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
     }),
-    // GraphQL module
+
+    // Database module setup with async configuration
+    MongooseModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get('MONGO_URI'),
+      }),
+      inject: [ConfigService],
+    }),
+
+    // GraphQL module setup with async configuration
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         autoSchemaFile: 'src/schema.gql',
         cors: {
@@ -35,20 +48,17 @@ import { APP_GUARD } from '@nestjs/core';
           },
         },
       }),
-    }),
-    // Mongo module
-    MongooseModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get('MONGO_URI'),
-      }),
     }),
+
+    // Application feature modules
     UsersModule,
     BillingModule,
     AuthModule,
   ],
   controllers: [],
   providers: [
+    // Application-wide guard for JWT authentication
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
