@@ -11,6 +11,7 @@ import { UserDocument, UserModel } from 'src/models/users.model';
 import { CreateUserInput, FindUserInput } from 'src/dtos/user.input';
 import { Schema as MongooseSchema } from 'mongoose';
 import { BillingService } from 'src/billing/billing.service';
+import { Public } from 'src/decorator/public.decorator';
 
 @Resolver((of) => UserModel)
 export class UsersResolver {
@@ -29,6 +30,7 @@ export class UsersResolver {
     return this.userService.getUser(input);
   }
 
+  @Public()
   @Mutation((returns) => UserModel)
   async createUser(@Args('input') input: CreateUserInput): Promise<UserModel> {
     return this.userService.createUser(input);

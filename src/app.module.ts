@@ -22,10 +22,18 @@ import { APP_GUARD } from '@nestjs/core';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         autoSchemaFile: 'src/schema.gql',
+        cors: {
+          credentials: true,
+          origin: true,
+        },
         sortSchema: true,
-        playground: true,
         debug: configService.get<boolean>('DEBUG'),
         context: ({ req, res }) => ({ req, res }),
+        playground: {
+          settings: {
+            'request.credentials': 'include',
+          },
+        },
       }),
     }),
     // Mongo module

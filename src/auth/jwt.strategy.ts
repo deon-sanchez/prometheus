@@ -6,9 +6,6 @@ import { Request } from 'express';
 import { UsersService } from 'src/users/users.service';
 import { AuthInput } from 'src/dtos/auth.input';
 
-/**
- * JwtStrategy class that extends PassportStrategy and implements JWT authentication strategy.
- */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
