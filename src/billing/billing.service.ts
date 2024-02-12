@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Schema as MongooseSchema } from 'mongoose';
+import { Model } from 'mongoose';
 import { BillingDocument, BillingModel } from 'src/models/billing.model';
 import { UsersService } from 'src/users/users.service';
 import Stripe from 'stripe';
@@ -21,10 +21,8 @@ export class BillingService {
     });
   }
 
-  async createCustomer(
-    _id: MongooseSchema.Types.ObjectId,
-  ): Promise<BillingModel> {
-    const user = await this.userService.getUserById(_id);
+  async createCustomer(_id: string): Promise<BillingModel> {
+    const user = await this.userService.getUser({ _id });
 
     if (!user) {
       throw new Error('User not found');
@@ -42,9 +40,7 @@ export class BillingService {
     return createdBilling.save();
   }
 
-  async deleteCustomer(
-    _id: MongooseSchema.Types.ObjectId,
-  ): Promise<BillingModel> {
+  async deleteCustomer(_id: string): Promise<BillingModel> {
     const billing = await this.stripeModel.findById(_id).exec();
 
     if (!billing) {
@@ -60,8 +56,8 @@ export class BillingService {
     return await this.stripeModel.findByIdAndDelete(_id).exec();
   }
 
-  async findById(id: string): Promise<BillingModel> {
-    const stripe_id = await this.stripeModel.findById(id).exec();
+  async findById(_id: string): Promise<BillingModel> {
+    const stripe_id = await this.stripeModel.findById(_id).exec();
     return stripe_id;
   }
 }

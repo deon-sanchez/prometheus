@@ -1,11 +1,19 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { BillingInput } from './billing.input';
 
-@InputType({ description: 'User Input' })
-export class UserInput {
+@InputType({ description: 'Create User Input' })
+export class CreateUserInput {
   @Field()
   email: string;
 
   @Field()
   password: string;
+}
+
+@InputType({ description: 'Find User Input' })
+export class FindUserInput {
+  @Field({ nullable: true })
+  email?: string;
+
+  @Field({ nullable: true })
+  _id?: string;
 }

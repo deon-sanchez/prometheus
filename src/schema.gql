@@ -2,27 +2,51 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+"""Auth Input"""
+input AuthInput {
+  email: String!
+  password: String!
+}
+
 """Billing Response"""
 type BillingModel {
   stripe_id: String!
 }
 
+"""Create User Input"""
+input CreateUserInput {
+  email: String!
+  password: String!
+}
+
+"""Find User Input"""
+input FindUserInput {
+  _id: String
+  email: String
+}
+
+"""Auth Response"""
+type LoginResponse {
+  loggedIn: Boolean!
+}
+
+"""Logout Response"""
+type LogoutResponse {
+  loggedOut: Boolean!
+}
+
 type Mutation {
   createCustomer(_id: String!): BillingModel!
-  createUser(input: UserInput!): UserModel!
+  createUser(input: CreateUserInput!): UserModel!
   deleteCustomer(_id: String!): BillingModel!
   deleteUser(_id: String!): UserModel!
+  login(input: AuthInput!): LoginResponse!
+  logout: LogoutResponse!
 }
 
 type Query {
-  user(_id: String!): UserModel!
+  user(input: FindUserInput!): UserModel!
   users: [UserModel!]!
-}
-
-"""User Input"""
-input UserInput {
-  email: String!
-  password: String!
 }
 
 """User Response"""

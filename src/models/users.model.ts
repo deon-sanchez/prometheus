@@ -9,7 +9,7 @@ export type UserDocument = UserModel & Document;
 @Schema()
 export class UserModel extends Document {
   @Field((type) => String)
-  _id: MongooseSchema.Types.ObjectId;
+  _id: string;
 
   @Field((type) => String)
   @Prop({ type: String, required: true, unique: true })
@@ -21,7 +21,7 @@ export class UserModel extends Document {
 
   @Field((type) => BillingModel, { nullable: true })
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: BillingModel.name })
-  billing: MongooseSchema.Types.ObjectId | BillingModel;
+  billing: BillingModel;
 }
 
 export const UserSchema = SchemaFactory.createForClass(UserModel);

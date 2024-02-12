@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Schema as MongooseSchema } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { UserInput } from 'src/dtos/user.input';
+import { FindUserInput, CreateUserInput } from 'src/dtos/user.input';
 import { UserDocument, UserModel } from 'src/models/users.model';
 
 const SALT_ROUNDS = 10;
@@ -17,7 +17,7 @@ export class UsersService {
     @InjectModel(UserModel.name) private userModel: Model<UserDocument>,
   ) {}
 
-  async createUser(user: UserInput): Promise<UserModel> {
+  async createUser(user: CreateUserInput): Promise<UserModel> {
     user.password = await bcrypt.hash(user.password, SALT_ROUNDS);
     const newUser = new this.userModel(user);
 
@@ -32,11 +32,19 @@ export class UsersService {
     return await this.userModel.find().exec();
   }
 
-  async getUserById(_id: MongooseSchema.Types.ObjectId): Promise<UserModel> {
-    const user = await this.userModel.findById(_id).exec();
+  async getUser(input: FindUserInput): Promise<UserModel> {
+    let user: UserDocument;
+
+    if (input?._id) {
+      user = await this.userModel.findById(input?._id).exec();
+    }
+
+    if (input?.email) {
+      user = await this.userModel.findOne({ email: input?.email }).exec();
+    }
 
     if (!user) {
-      throw new NotFoundException(`User ${_id} not found`);
+      throw new NotFoundException(`User not found`);
     }
     return user;
   }
