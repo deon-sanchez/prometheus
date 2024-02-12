@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
@@ -7,7 +7,7 @@ export type BillingDocument = BillingModel & Document;
 @ObjectType({ description: 'Billing Response' })
 @Schema()
 export class BillingModel extends Document {
-  @Field((type) => String)
+  @HideField()
   _id: MongooseSchema.Types.ObjectId;
 
   @Field((type) => String)
