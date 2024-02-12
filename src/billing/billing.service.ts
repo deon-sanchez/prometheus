@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Schema as MongooseSchema } from 'mongoose';
 import { BillingDocument, BillingModel } from 'src/models/billing.model';
+import { UsersService } from 'src/users/users.service';
 import Stripe from 'stripe';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class BillingService {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @InjectModel(BillingModel.name)
     private stripeModel: Model<BillingDocument>,
+    private userService: UsersService,
   ) {
     this.stripe = new Stripe(configService.get('STRIPE_API_KEY'), {
       apiVersion: '2023-10-16',
@@ -22,12 +24,19 @@ export class BillingService {
   async createCustomer(
     _id: MongooseSchema.Types.ObjectId,
   ): Promise<BillingModel> {
-    // const stripeCustomer = await this.stripe.customers.create({ email });
-    const stripeId = { _id, stripe_id: 'cus-test-123' };
-    const createdBilling = new this.stripeModel(stripeId);
+    const user = await this.userService.getUserById(_id);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const stripe_id = await this.stripe.customers.create({ email: user.email });
+
+    const payload = { _id, stripe_id };
+    const createdBilling = new this.stripeModel(payload);
 
     if (!createdBilling) {
-      throw new Error(`Failed to add ${stripeId} to database`);
+      throw new Error(`Failed to add ${stripe_id} to database`);
     }
 
     return createdBilling.save();
@@ -36,11 +45,17 @@ export class BillingService {
   async deleteCustomer(
     _id: MongooseSchema.Types.ObjectId,
   ): Promise<BillingModel> {
-    // const customer = await this.stripe.customers.del(_id.toString());
+    const billing = await this.stripeModel.findById(_id).exec();
 
-    // if (!customer) {
-    //   throw new Error('Failed to delete customer');
-    // }
+    if (!billing) {
+      throw new Error('User not found');
+    }
+
+    const customer = await this.stripe.customers.del(billing.stripe_id);
+
+    if (!customer) {
+      throw new Error('Failed to delete customer');
+    }
 
     return await this.stripeModel.findByIdAndDelete(_id).exec();
   }
