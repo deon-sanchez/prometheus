@@ -29,6 +29,6 @@ input UserInput {
 """User Response"""
 type UserModel {
   _id: String!
-  billing: BillingModel!
+  billing: BillingModel
   email: String!
 }

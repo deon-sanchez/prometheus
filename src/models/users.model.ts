@@ -19,7 +19,7 @@ export class UserModel extends Document {
   @Prop({ type: String, required: true })
   password: string;
 
-  @Field((type) => BillingModel)
+  @Field((type) => BillingModel, { nullable: true })
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: BillingModel.name })
   billing: MongooseSchema.Types.ObjectId | BillingModel;
 }

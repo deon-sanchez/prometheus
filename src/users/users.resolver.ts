@@ -7,14 +7,17 @@ import {
   Parent,
 } from '@nestjs/graphql';
 import { UsersService } from './users.service';
-import { UserModel } from 'src/models/users.model';
+import { UserDocument, UserModel } from 'src/models/users.model';
 import { UserInput } from 'src/dtos/user.input';
 import { Schema as MongooseSchema } from 'mongoose';
-import { BillingDocument, BillingModel } from 'src/models/billing.model';
+import { BillingService } from 'src/billing/billing.service';
 
 @Resolver((of) => UserModel)
 export class UsersResolver {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private readonly billingService: BillingService,
+  ) {}
 
   @Query((returns) => [UserModel])
   users(): Promise<UserModel[]> {
@@ -41,9 +44,7 @@ export class UsersResolver {
   }
 
   @ResolveField()
-  async billing(@Parent() billing: BillingDocument) {
-    await billing.populate({ path: 'billing', model: BillingModel.name });
-
-    return { ...billing };
+  async billing(@Parent() user: UserDocument) {
+    return await this.billingService.findById(user._id);
   }
 }

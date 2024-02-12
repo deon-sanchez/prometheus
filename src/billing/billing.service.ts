@@ -46,6 +46,7 @@ export class BillingService {
   }
 
   async findById(id: string): Promise<BillingModel> {
-    return await this.stripeModel.findById(id).exec();
+    const stripe_id = await this.stripeModel.findById(id).exec();
+    return stripe_id;
   }
 }
