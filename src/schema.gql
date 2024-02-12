@@ -4,8 +4,8 @@
 
 """Billing Response"""
 type BillingModel {
-  _id: String
-  stripe_id: String
+  _id: String!
+  stripe_id: String!
 }
 
 type Mutation {

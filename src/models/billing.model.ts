@@ -7,10 +7,10 @@ export type BillingDocument = BillingModel & Document;
 @ObjectType({ description: 'Billing Response' })
 @Schema()
 export class BillingModel extends Document {
-  @Field((type) => String, { nullable: true, defaultValue: null })
+  @Field((type) => String)
   _id: MongooseSchema.Types.ObjectId;
 
-  @Field((type) => String, { nullable: true, defaultValue: null })
+  @Field((type) => String)
   @Prop({ type: String })
   stripe_id: string;
 }
