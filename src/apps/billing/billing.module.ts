@@ -3,7 +3,7 @@ import { BillingService } from './billing.service';
 import { BillingResolver } from './billing.resolver';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BillingModel, BillingSchema } from 'src/models/billing.model';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/apps/users/users.service';
 import { UserModel, UserSchema } from 'src/models/users.model';
 
 @Module({

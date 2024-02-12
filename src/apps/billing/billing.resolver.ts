@@ -1,7 +1,6 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { BillingService } from './billing.service';
 import { BillingModel } from 'src/models/billing.model';
-import { Schema as MongooseSchema } from 'mongoose';
 
 @Resolver()
 export class BillingResolver {

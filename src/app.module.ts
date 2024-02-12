@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
-import { BillingModule } from './billing/billing.module';
-import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './apps/users/users.module';
+import { BillingModule } from './apps/billing/billing.module';
+import { AuthModule } from './apps/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MongooseModule } from '@nestjs/mongoose';
-import { JwtAuthGuard } from './auth/jwt.guard';
+import { JwtAuthGuard } from './apps/auth/jwt.guard';
 import { APP_GUARD } from '@nestjs/core';
 
 @Module({
