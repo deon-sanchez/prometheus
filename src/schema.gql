@@ -42,11 +42,18 @@ type Mutation {
   deleteUser(_id: String!): UserModel!
   login(input: AuthInput!): LoginResponse!
   logout: LogoutResponse!
+  updateCustomer(input: UpdateBillingDto!): BillingModel!
 }
 
 type Query {
   user(input: FindUserInput!): UserModel!
   users: [UserModel!]!
+}
+
+"""Billing Update Input"""
+input UpdateBillingDto {
+  _id: String!
+  stripe_id: String!
 }
 
 """User Response"""

@@ -38,7 +38,7 @@ export class UsersResolver {
 
   @Mutation((returns) => UserModel)
   async deleteUser(
-    @Args('_id', { type: () => String }) _id: MongooseSchema.Types.ObjectId,
+    @Args('_id', { type: () => String }) _id: string,
   ): Promise<UserModel> {
     return this.userService.deleteUserById(_id);
   }

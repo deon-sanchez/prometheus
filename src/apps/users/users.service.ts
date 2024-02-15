@@ -6,7 +6,11 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Schema as MongooseSchema } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { FindUserInput, CreateUserInput } from 'src/dtos/user.input';
+import {
+  FindUserInput,
+  CreateUserInput,
+  UpdateUserDto,
+} from 'src/dtos/user.input';
 import { UserDocument, UserModel } from 'src/models/users.model';
 
 const SALT_ROUNDS = 10;
@@ -49,12 +53,28 @@ export class UsersService {
     return user;
   }
 
-  async deleteUserById(_id: MongooseSchema.Types.ObjectId): Promise<UserModel> {
+  async deleteUserById(_id: string): Promise<UserModel> {
     const user = await this.userModel.findByIdAndDelete(_id).exec();
 
     if (!user) {
       throw new NotFoundException(`User ${_id} not found`);
     }
     return user;
+  }
+
+  async updateUser(
+    _id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserModel> {
+    const existingUser = await this.userModel.findByIdAndUpdate(
+      _id,
+      updateUserDto,
+      { new: true },
+    );
+
+    if (!existingUser) {
+      throw new NotFoundException(`User #${_id} not found`);
+    }
+    return existingUser;
   }
 }

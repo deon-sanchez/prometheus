@@ -17,3 +17,5 @@ export class FindUserInput {
   @Field({ nullable: true })
   _id?: string;
 }
+
+export class UpdateUserDto extends CreateUserInput {}
