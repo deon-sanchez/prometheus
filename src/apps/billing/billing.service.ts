@@ -1,11 +1,10 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BillingDocument, BillingModel } from 'src/models/billing.model';
 import { UsersService } from 'src/apps/users/users.service';
 import Stripe from 'stripe';
-import { UpdateBillingDto } from 'src/dtos/billing.input';
 
 @Injectable()
 export class BillingService {
@@ -39,34 +38,6 @@ export class BillingService {
     }
 
     return createdBilling.save();
-  }
-
-  async updateCustomer(input: UpdateBillingDto): Promise<BillingModel> {
-    const user = await this.userService.getUser({
-      _id: input._id,
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    // TODO: need type for Stripe update
-    const stripe = await this.stripe.customers.update(
-      user.billing.stripe_id,
-      {},
-    );
-
-    const existingCustomer = await this.stripeModel.findByIdAndUpdate(
-      user._id,
-      { stripe },
-      { new: true },
-    );
-
-    if (!existingCustomer) {
-      throw new Error(`Failed to update ${stripe.id} to database`);
-    }
-
-    return existingCustomer;
   }
 
   async deleteCustomer(_id: string): Promise<BillingModel> {

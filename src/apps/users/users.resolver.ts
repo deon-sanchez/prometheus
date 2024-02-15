@@ -9,7 +9,6 @@ import {
 import { UsersService } from './users.service';
 import { UserDocument, UserModel } from 'src/models/users.model';
 import { CreateUserInput, FindUserInput } from 'src/dtos/user.input';
-import { Schema as MongooseSchema } from 'mongoose';
 import { BillingService } from 'src/apps/billing/billing.service';
 import { Public } from 'src/decorator/public.decorator';
 

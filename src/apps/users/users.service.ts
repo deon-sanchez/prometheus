@@ -4,13 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Schema as MongooseSchema } from 'mongoose';
+import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import {
-  FindUserInput,
-  CreateUserInput,
-  UpdateUserDto,
-} from 'src/dtos/user.input';
+import { FindUserInput, CreateUserInput } from 'src/dtos/user.input';
 import { UserDocument, UserModel } from 'src/models/users.model';
 
 const SALT_ROUNDS = 10;
@@ -60,21 +56,5 @@ export class UsersService {
       throw new NotFoundException(`User ${_id} not found`);
     }
     return user;
-  }
-
-  async updateUser(
-    _id: string,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserModel> {
-    const existingUser = await this.userModel.findByIdAndUpdate(
-      _id,
-      updateUserDto,
-      { new: true },
-    );
-
-    if (!existingUser) {
-      throw new NotFoundException(`User #${_id} not found`);
-    }
-    return existingUser;
   }
 }
